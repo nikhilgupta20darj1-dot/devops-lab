@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Hello DevOps!</h1>
+<p>This app is the practice target for my DevOps lab. I will host it, containerize it, deploy it with pipelines, and monitor it.</p>
+<div class="card">
+  <p>You have <strong>{{ task_count }}</strong> tasks on the roadmap.</p>
+  <a class="button" href="{{ url_for('tasks_page') }}">View tasks</a>
+</div>
+{% endblock %}

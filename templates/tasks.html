@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+<h1>DevOps Roadmap Tasks</h1>
+
+<form method="post" action="{{ url_for('tasks_page') }}" class="add">
+  <input type="text" name="title" placeholder="Add a new task" required>
+  <button type="submit">Add</button>
+</form>
+
+<ul class="tasks">
+  {% for t in tasks %}
+  <li class="{{ 'done' if t.done else '' }}">
+    <form method="post" action="{{ url_for('toggle_task', task_id=t.id) }}">
+      <button type="submit" class="toggle">{{ '&#10004;' | safe if t.done else '&#9675;' | safe }}</button>
+      <span>{{ t.title }}</span>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}
