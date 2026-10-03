@@ -7,9 +7,12 @@ import time
 import psycopg2
 import psycopg2.extras
 from flask import Flask, jsonify, redirect, render_template, request, url_for
+from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
 
+metrics = PrometheusMetrics(app)
+metrics.info("app_info", "Application info", version=APP_VERSION, env=APP_ENV)
 APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
 APP_ENV = os.getenv("APP_ENV", "local")
 PORT = int(os.getenv("PORT", "5000"))
