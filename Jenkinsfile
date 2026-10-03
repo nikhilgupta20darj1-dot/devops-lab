@@ -1,10 +1,30 @@
 pipeline {
     agent any
 
+    environment {
+        DATABASE_URL = "postgresql://devops:devpass123@localhost:5433/devopslab"
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Start test database') {
+            steps {
+                sh '''
+                    docker rm -f test-postgres || true
+                    docker run -d --name test-postgres \
+                        -e POSTGRES_USER=devops \
+                        -e POSTGRES_PASSWORD=devpass123 \
+                        -e POSTGRES_DB=devopslab \
+                        -p 5433:5432 \
+                        postgres:16
+                    echo "Waiting for Postgres to be ready..."
+                    sleep 8
+                '''
             }
         }
 
@@ -23,6 +43,9 @@ pipeline {
     }
 
     post {
+        always {
+            sh 'docker rm -f test-postgres || true'
+        }
         success {
             echo 'Build and tests passed!'
         }
