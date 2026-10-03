@@ -11,13 +11,15 @@ from prometheus_flask_exporter import PrometheusMetrics
 
 app = Flask(__name__)
 
-metrics = PrometheusMetrics(app)
-metrics.info("app_info", "Application info", version=APP_VERSION, env=APP_ENV)
+
 APP_VERSION = os.getenv("APP_VERSION", "1.0.0")
 APP_ENV = os.getenv("APP_ENV", "local")
 PORT = int(os.getenv("PORT", "5000"))
 DATABASE_URL = os.getenv("DATABASE_URL")
 START_TIME = time.time()
+
+metrics = PrometheusMetrics(app)
+metrics.info("app_info", "Application info", version=APP_VERSION, env=APP_ENV)
 
 logging.basicConfig(
     level=logging.INFO,
