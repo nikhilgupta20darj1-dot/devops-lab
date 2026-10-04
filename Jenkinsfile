@@ -4,7 +4,7 @@ pipeline {
     environment {
         DATABASE_URL = "postgresql://devops:devpass123@localhost:5433/devopslab"
         IMAGE_NAME = "devops-lab-app"
-        VM1_IP = "192.168.56.101"
+        VM1_IP = "192.168.56.103"
     }
 
     stages {
