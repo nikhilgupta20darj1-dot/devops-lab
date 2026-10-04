@@ -3,6 +3,8 @@ pipeline {
 
     environment {
         DATABASE_URL = "postgresql://devops:devpass123@localhost:5433/devopslab"
+        IMAGE_NAME = "devops-lab-app"
+        VM1_IP = "192.168.56.101"
     }
 
     stages {
@@ -40,6 +42,27 @@ pipeline {
                 sh '. venv/bin/activate && pytest'
             }
         }
+
+        stage('Build Docker image') {
+            steps {
+                sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
+                sh "docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${IMAGE_NAME}:latest"
+            }
+        }
+
+        stage('Deploy to vm1') {
+            steps {
+                sshagent(credentials: ['vm1-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no devops@${VM1_IP} "
+                            cd ~/devops-lab &&
+                            git pull &&
+                            docker compose up -d --build
+                        "
+                    '''
+                }
+            }
+        }
     }
 
     post {
@@ -47,10 +70,10 @@ pipeline {
             sh 'docker rm -f test-postgres || true'
         }
         success {
-            echo 'Build and tests passed!'
+            echo "Build #${BUILD_NUMBER} deployed successfully to vm1"
         }
         failure {
-            echo 'Build or tests failed.'
+            echo 'Pipeline failed.'
         }
     }
 }
